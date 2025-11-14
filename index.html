@@ -28,9 +28,10 @@
       display:flex;
       justify-content:center;
       align-items:flex-start;
-      overflow:hidden;
+      overflow:auto;
       padding-top:32px;
       color: var(--color-text);
+      scroll-behavior: smooth; /* плавный скролл */
     }
 
     .app {
@@ -42,9 +43,12 @@
       box-sizing:border-box;
       display:flex;
       flex-direction:column;
-      justify-content:space-between;
+      justify-content:flex-start;
       backdrop-filter: blur(6px);
       box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      max-height: 90vh;
+      overflow-y: auto;
+      scroll-behavior: smooth; /* плавный скролл */
     }
 
     header h1 {
@@ -57,14 +61,6 @@
       letter-spacing:2px;
       text-transform: uppercase;
       text-shadow: none;
-    }
-
-    header .muted {
-      text-align:center;
-      margin-top:16px;
-      color: var(--sport-label-color);
-      font-size:22px;
-      font-weight:500;
     }
 
     .section { width:100%; margin-top:24px; }
@@ -111,18 +107,6 @@
     .sport-buttons button[data-sport="kuresh"] { background-image: url('kuresh0.jpg'); }
     .sport-buttons button[data-sport="volley"] { background-image: url('volleyball0.jpg'); }
 
-    .date-buttons button, .date-buttons input[type="date"] {
-      background: rgba(0,0,0,0.6);
-      color:#fff;
-      border-radius:14px;
-      font-size:18px;
-      padding:14px;
-      border:none;
-      width:100%;
-      margin-top:8px;
-      cursor:pointer;
-    }
-
     .divider { width:100%; height:2px; background: var(--divider-color); margin:20px 0; border-radius:1px; }
     .footer { width:100%; text-align:center; color: var(--color-muted); font-size:14px; margin-top:12px; }
 
@@ -155,23 +139,9 @@
     <div class="footer">by Aituk</div>
   </div>
 
-  <!-- VIEW 2 -->
-  <div id="dateView" style="display:none">
-    <button id="backToSport" class="small btn">← Назад</button>
-    <div class="divider"></div>
-    <h2>Выбор даты</h2>
-    <div class="section date-buttons">
-      <button id="todayBtn">Сегодня</button>
-      <button id="chooseDateBtn">Выбрать дату 📅</button>
-      <input type="date" id="datePicker" style="display:none;" />
-    </div>
-    <div class="divider"></div>
-    <div class="footer">Yama Sport</div>
-  </div>
-
-  <!-- VIEW 3 -->
+  <!-- VIEW 2: тренировки -->
   <div id="trainingView" style="display:none">
-    <button id="backToDate" class="small btn">← Назад</button>
+    <button id="backToSport" class="small btn">← Назад</button>
     <div class="divider"></div>
     <h2>Тренировки</h2>
     <div id="trainingList"></div>
@@ -179,7 +149,7 @@
     <div class="footer">Yama Sport</div>
   </div>
 
-  <!-- VIEW 4 -->
+  <!-- VIEW 3: бронирование -->
   <div id="bookingView" style="display:none">
     <button id="backToTrainings" class="small btn">← Назад</button>
     <div class="divider"></div>
@@ -206,27 +176,29 @@
   tg.expand();
 
   const sportView = document.getElementById('sportView');
-  const dateView = document.getElementById('dateView');
   const trainingView = document.getElementById('trainingView');
   const bookingView = document.getElementById('bookingView');
   const trainingList = document.getElementById('trainingList');
   const trainingTitle = document.getElementById('trainingTitle');
-  const datePicker = document.getElementById('datePicker');
 
   let selectedSport = null;
-  let selectedDate = null;
   let selectedTraining = null;
 
-  function show(v){ [sportView,dateView,trainingView,bookingView].forEach(x=>x.style.display='none'); v.style.display='block'; }
+  function show(v){
+    [sportView,trainingView,bookingView].forEach(x=>x.style.display='none');
+    v.style.display='block';
+    v.scrollIntoView({behavior: 'smooth'}); // плавный скролл
+  }
 
-  document.querySelectorAll('[data-sport]').forEach(btn=>{ btn.onclick=()=>{ selectedSport=btn.dataset.sport; show(dateView); }; });
+  document.querySelectorAll('[data-sport]').forEach(btn=>{
+    btn.onclick=()=>{
+      selectedSport=btn.dataset.sport;
+      loadTrainings(); // сразу показываем тренировки
+    };
+  });
+
   document.getElementById('backToSport').onclick=()=>show(sportView);
-  document.getElementById('backToDate').onclick=()=>show(dateView);
   document.getElementById('backToTrainings').onclick=()=>show(trainingView);
-
-  document.getElementById('todayBtn').onclick=()=>{ selectedDate=new Date().toISOString().split("T")[0]; loadTrainings(); };
-  document.getElementById('chooseDateBtn').onclick=()=>{ datePicker.focus(); };
-  datePicker.onchange=()=>{ selectedDate=datePicker.value; loadTrainings(); };
 
   async function loadTrainings(){
     trainingList.innerHTML="<div class='muted'>Загрузка...</div>";
@@ -250,13 +222,22 @@
         <button class='btn small' data-id='3' data-name='Вечерняя тренировка'>Выбрать</button>
       </div>
     `;
-    // Сделать названия тренировок белыми
     document.querySelectorAll('.training-item .title').forEach(t=>t.style.color='#fff');
     show(trainingView);
   }
 
-  trainingList.onclick=e=>{ const btn=e.target.closest("button[data-id]"); if(!btn) return; selectedTraining={id:btn.dataset.id,name:btn.dataset.name}; trainingTitle.textContent=selectedTraining.name; show(bookingView); };
-  document.getElementById('confirmBtn').onclick=()=>{ alert('Запись отправлена! Ожидайте подтверждения...'); show(sportView); };
+  trainingList.onclick=e=>{
+    const btn=e.target.closest("button[data-id]"); 
+    if(!btn) return; 
+    selectedTraining={id:btn.dataset.id,name:btn.dataset.name}; 
+    trainingTitle.textContent=selectedTraining.name; 
+    show(bookingView); 
+  };
+
+  document.getElementById('confirmBtn').onclick=()=>{
+    alert('Запись отправлена! Ожидайте подтверждения...');
+    show(sportView);
+  };
 </script>
 </body>
 </html>
