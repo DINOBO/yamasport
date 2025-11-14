@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="ru">
 <head>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>Yama Sport — Запись на тренировки</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
       --bg-dark: #000;
@@ -13,170 +13,191 @@
       --text-muted: #888;
       --accent: #fff;
       --button-bg: rgba(0,0,0,0.6);
-      --button-bg-blur: rgba(0,0,0,0.4);
+      --divider-color: #444;
+      --main-title-color: #000;
     }
 
     html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      font-family: Inter, sans-serif;
+      margin:0;
+      padding:0;
+      width:100%;
+      height:100%;
+      font-family:Inter, sans-serif;
       background: #000;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      overflow:hidden;
       color: var(--text-light);
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding-top: 28px;
+      padding-top:32px;
     }
 
     .app {
-      width: 420px;
-      max-width: 95%;
-      background: url('bg.jpg') center/cover no-repeat;
-      border-radius: 20px;
-      padding: 20px;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      width:420px;
+      max-width:95%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.9) 100%), url('bg.jpg') center/cover no-repeat;
+      border-radius:20px;
+      padding:20px;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
       backdrop-filter: blur(4px);
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 32px;
-      font-weight: 700;
-      text-align: center;
-      color: #fff;
-    }
+    header h1 { margin:0; font-size:32px; color:var(--main-title-color); font-weight:700; text-align:center; }
+    header .muted { text-align:center; margin-top:16px; color:#fff; font-size:20px; }
 
-    header .muted {
-      text-align: center;
-      margin-top: 6px;
-      color: var(--text-muted);
-    }
+    .section { width:100%; margin-top:20px; }
 
-    .section {
-      width: 100%;
-      margin-top: 20px;
-    }
+    .btn { width:100%; padding:16px; font-size:20px; font-weight:700; border-radius:14px; border:none; background: var(--button-bg); color: var(--accent); cursor:pointer; backdrop-filter: blur(4px); transition:none; }
+    .btn.small { width:auto; padding:10px 14px; font-size:14px; }
 
-    .btn {
-      width: 100%;
-      padding: 16px;
-      font-size: 18px;
-      font-weight: 600;
-      border-radius: 14px;
-      border: none;
-      background: var(--button-bg);
-      color: var(--accent);
-      cursor: pointer;
-      transition: 0.2s;
-      backdrop-filter: blur(4px);
-    }
+    .sport-buttons button { background-size:cover; background-position:center; background-repeat:no-repeat; height:120px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; color:#f2f2f2; border-radius:16px; text-shadow:0 0 6px #000; filter:none; transition:none; margin-top:12px; }
+    .sport-buttons button[data-sport="kuresh"] { background-image: url('kuresh.jpg'); }
+    .sport-buttons button[data-sport="volley"] { background-image: url('volleyball.jpg'); }
 
-    .btn:hover {
-      background: rgba(0,0,0,0.75);
-    }
-
-    .btn.small {
-      width: auto;
-      padding: 10px 14px;
-      font-size: 14px;
-    }
-
-    .sport-buttons button {
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      height: 110px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      font-weight: 700;
-      color: #f2f2f2;
-      border-radius: 16px;
-      text-shadow: 0 0 6px #000;
-      filter: none;
-    }
-
-    .sport-buttons button[data-sport="kuresh"] {
-      background-image: url('kuresh.jpg');
-    }
-
-    .sport-buttons button[data-sport="volley"] {
-      background-image: url('volleyball.jpg');
-    }
-
-    input[type="date"] {
+    .date-buttons button, .date-buttons input[type="date"] {
       background: rgba(0,0,0,0.6);
-      color: #fff;
-      border-radius: 12px;
-      padding: 13px;
-      font-size: 16px;
-      border: none;
-      width: 100%;
-      margin-top: 6px;
+      color:#fff;
+      border-radius:12px;
+      font-size:16px;
+      padding:13px;
+      border:none;
+      width:100%;
+      margin-top:6px;
+      cursor:pointer;
     }
 
-    .divider {
-      width: 100%;
-      height: 1px;
-      background: #444;
-      margin-top: 25px;
-    }
+    .divider { width:100%; height:1px; background: var(--divider-color); margin-top:25px; }
+    .footer { width:100%; text-align:center; color:#fff; font-size:13px; margin-top:10px; }
 
-    .footer {
-      width: 100%;
-      text-align: center;
-      color: #555;
-      font-size: 13px;
-      margin-top: 10px;
-    }
-
-    .training-item {
-      padding: 16px;
-      border-radius: 14px;
-      background: rgba(0,0,0,0.5);
-      margin-top: 14px;
-    }
-
-    .training-item .title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    label {
-      display: block;
-      margin-top: 12px;
-      font-size: 16px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      margin-top: 6px;
-      font-size: 16px;
-      background: rgba(0,0,0,0.6);
-      color: #fff;
-    }
+    .training-item { padding:16px; border-radius:14px; background:rgba(0,0,0,0.5); margin-top:14px; }
+    .training-item .title { font-size:20px; font-weight:700; margin-bottom:6px; }
+    label { display:block; margin-top:12px; font-size:16px; }
+    input { width: calc(100% - 24px); padding:12px; border-radius:10px; border:none; margin-top:6px; font-size:16px; background: rgba(0,0,0,0.6); color:#fff; box-sizing:border-box; }
   </style>
 </head>
 <body>
 <div class="app" id="app">
 
-<!-- Контент аналогично предыдущему варианту, с кнопками спорта, выбора даты и тренировок -->
+  <!-- VIEW 1 -->
+  <div id="sportView">
+    <header>
+      <h1>Yama Sport</h1>
+      <div class="divider"></div>
+      <div class="muted">Выберите вид спорта</div>
+    </header>
+
+    <div class="section sport-buttons">
+      <button class="btn" data-sport="kuresh">Көрәш</button>
+      <button class="btn" data-sport="volley">Волейбол</button>
+    </div>
+
+    <div class="divider"></div>
+    <div class="footer">by Aituk</div>
+  </div>
+
+  <!-- VIEW 2 -->
+  <div id="dateView" style="display:none">
+    <button id="backToSport" class="small btn">← Назад</button>
+    <div class="divider"></div>
+    <h2>Выбор даты</h2>
+    <div class="section date-buttons">
+      <button id="todayBtn">Сегодня</button>
+      <button id="chooseDateBtn">Выбрать дату 📅</button>
+      <input type="date" id="datePicker" style="display:none;" />
+    </div>
+    <div class="divider"></div>
+    <div class="footer">Yama Sport</div>
+  </div>
+
+  <!-- VIEW 3 -->
+  <div id="trainingView" style="display:none">
+    <button id="backToDate" class="small btn">← Назад</button>
+    <div class="divider"></div>
+    <h2>Тренировки</h2>
+    <div id="trainingList"></div>
+    <div class="divider"></div>
+    <div class="footer">Yama Sport</div>
+  </div>
+
+  <!-- VIEW 4 -->
+  <div id="bookingView" style="display:none">
+    <button id="backToTrainings" class="small btn">← Назад</button>
+    <div class="divider"></div>
+    <h2 id="trainingTitle">Бронирование</h2>
+
+    <label>ФИО</label>
+    <input id="fio" placeholder="Иванов Иван" />
+
+    <label>Номер телефона</label>
+    <input id="phone" placeholder="+7 900 000 00 00" />
+
+    <label>Количество человек</label>
+    <input id="people" type="number" min="1" value="1" />
+
+    <button id="confirmBtn" class="btn" style="margin-top:20px">Записаться</button>
+    <div class="divider"></div>
+    <div class="footer">Yama Sport</div>
+  </div>
 
 </div>
+
 <script>
   const tg = window.Telegram.WebApp;
   tg.expand();
+
+  const sportView = document.getElementById('sportView');
+  const dateView = document.getElementById('dateView');
+  const trainingView = document.getElementById('trainingView');
+  const bookingView = document.getElementById('bookingView');
+  const trainingList = document.getElementById('trainingList');
+  const trainingTitle = document.getElementById('trainingTitle');
+  const datePicker = document.getElementById('datePicker');
+
+  let selectedSport = null;
+  let selectedDate = null;
+  let selectedTraining = null;
+
+  function show(v){ [sportView,dateView,trainingView,bookingView].forEach(x=>x.style.display='none'); v.style.display='block'; }
+
+  document.querySelectorAll('[data-sport]').forEach(btn=>{ btn.onclick=()=>{ selectedSport=btn.dataset.sport; show(dateView); }; });
+  document.getElementById('backToSport').onclick=()=>show(sportView);
+  document.getElementById('backToDate').onclick=()=>show(dateView);
+  document.getElementById('backToTrainings').onclick=()=>show(trainingView);
+
+  document.getElementById('todayBtn').onclick=()=>{ selectedDate=new Date().toISOString().split("T")[0]; loadTrainings(); };
+  document.getElementById('chooseDateBtn').onclick=()=>{ datePicker.focus(); };
+  datePicker.onchange=()=>{ selectedDate=datePicker.value; loadTrainings(); };
+
+  async function loadTrainings(){
+    trainingList.innerHTML="<div class='muted'>Загрузка...</div>";
+    trainingList.innerHTML=`
+      <div class='training-item'>
+        <div class='title'>Утренняя разминка</div>
+        <div class='muted'>Время: 10:00</div>
+        <div class='muted'>Тренер: Айтуган</div>
+        <button class='btn small' data-id='1' data-name='Утренняя разминка'>Выбрать</button>
+      </div>
+      <div class='training-item'>
+        <div class='title'>Основная тренировка</div>
+        <div class='muted'>Время: 15:00</div>
+        <div class='muted'>Тренер: Руслан</div>
+        <button class='btn small' data-id='2' data-name='Основная тренировка'>Выбрать</button>
+      </div>
+      <div class='training-item'>
+        <div class='title'>Вечерняя тренировка</div>
+        <div class='muted'>Время: 19:00</div>
+        <div class='muted'>Тренер: Артур</div>
+        <button class='btn small' data-id='3' data-name='Вечерняя тренировка'>Выбрать</button>
+      </div>
+    `;
+    show(trainingView);
+  }
+
+  trainingList.onclick=e=>{ const btn=e.target.closest("button[data-id]"); if(!btn) return; selectedTraining={id:btn.dataset.id,name:btn.dataset.name}; trainingTitle.textContent=selectedTraining.name; show(bookingView); };
+  document.getElementById('confirmBtn').onclick=()=>{ alert('Запись отправлена! (демо режим)'); show(sportView); };
 </script>
 </body>
 </html>
